@@ -10,4 +10,9 @@ public class User {
 		this.email = email;
 		this.passwordHash = passwordHash;
 	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", email=" + email + ", passwordHash=" + passwordHash + "]";
+	}
 }

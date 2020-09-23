@@ -3,9 +3,11 @@ package com.collabera.ecommerce;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
+import com.collabera.ecommerce.dao.User;
 import com.collabera.ecommerce.dao.UserDao;
 import com.collabera.ecommerce.states.*;
 import com.collabera.ecommerce.transitions.*;
@@ -19,6 +21,7 @@ public class ECommerceTerminalApp {
 	
 	private static ECommerceTerminalApp singleton;
 	public String username;
+	public User user;
 	
 	public static ECommerceTerminalApp getSingleton() {
 		if(singleton==null)
@@ -55,7 +58,13 @@ public class ECommerceTerminalApp {
 	}
 	
 	public boolean attemptLogin(String password) {
-		return UserDao.GetUser(this.username, password).isPresent();
+		Optional<User> optionalUser = UserDao.getUser(this.username, password);
+		if(optionalUser.isPresent()) {
+			user = optionalUser.get();
+			return true;
+		}
+		user = null;
+		return false;
 	}
 	
 	public ResourceBundle getI18n() {
@@ -64,20 +73,28 @@ public class ECommerceTerminalApp {
 	
 	public State[] makeStates() {
 		return new State[] {
-				new EntranceState(),	//0
+				new MenuState(			//0
+					"REGISTER",
+					"LOGIN",
+					"EXIT"),	
 				new ExitState(),		//1
 				new BeginLoginState(),	//2
 				new EmailLoginState(),	//3
 				new MenuState(			//4
 					"REPLACE an Item",
 					"BUY an Item", 
+					"LIST <index> <length> your invoices",
 					"LOGOUT"),
 				new MenuState(			//5 BuyState
-					"List <index> <length>",
-					"Add <id>",
-					"checkout",
+					"LIST <index> <length>",
+					"ADD <id>",
+					"CHECKOUT",
 					"RETURN to menu"),
-				new ListItemsState()	//6
+				new ListItemsState(),	//6
+				new AddItemState(),		//7
+				new CheckoutState(),	//8
+				new ListInvoicesState()//9
+				
 			};
 	}
 	
@@ -110,20 +127,37 @@ public class ECommerceTerminalApp {
 		path = new ArrayList<>();
 		path.add(new Pair<>(new OptionTransition("logout"),0));
 		path.add(new Pair<>(new OptionTransition("buy"),5));
+		path.add(new Pair<>(new ArgTransition("list","\\d+","\\d+"),9));
 		paths.add(path);
 		
 		//BuyState 5
 		path = new ArrayList<>();
 		path.add(new Pair<>(new OptionTransition("return"),4));
-		path.add(new Pair<>(new OptionTransition("list"),5));
 		path.add(new Pair<>(new ArgTransition("list","\\d+","\\d+"),6));
+		path.add(new Pair<>(new ArgTransition("add","\\w+"),7));
+		path.add(new Pair<>(new OptionTransition("checkout"),8));
 		paths.add(path);
 		
 		//ListItemsState 6
 		path = new ArrayList<>();
+		path.add(new Pair<>(new AnyTransition(),5));
+		paths.add(path);
+		
+		//AddItemState 7
+		path = new ArrayList<>();
+		path.add(new Pair<>(new AnyTransition(),5));
+		paths.add(path);
+		
+		//CheckoutState 8
+		path = new ArrayList<>();
+		path.add(new Pair<>(new AnyTransition(),5));
+		paths.add(path);
+		
+		//ListInvoicesState 9 
+		path = new ArrayList<>();
 		path.add(new Pair<>(new AnyTransition(),4));
 		paths.add(path);
-			
+				
 		return paths;
 	}
 	

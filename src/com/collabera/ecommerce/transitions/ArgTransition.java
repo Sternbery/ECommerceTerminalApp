@@ -21,7 +21,7 @@ public class ArgTransition implements Transition {
 	
 	@Override
 	public boolean checkAccepts(String input) {
-		String[] args = input.split(" ");
+		String[] args = input.split("\\s+");
 		//System.out.println(Arrays.toString(args));
 		
 		if(args.length != patterns.length) {
