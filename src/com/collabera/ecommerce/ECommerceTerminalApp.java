@@ -7,9 +7,11 @@ import java.util.ResourceBundle;
 import java.util.Scanner;
 
 import com.collabera.ecommerce.states.*;
+import com.collabera.ecommerce.transitions.*;
 import com.collabera.fsm.FiniteStateMachine;
 import com.collabera.fsm.MatchResult;
 import com.collabera.fsm.State;
+import com.collabera.fsm.Transition;
 import com.collabera.tools.Pair;
 
 public class ECommerceTerminalApp {
@@ -25,10 +27,7 @@ public class ECommerceTerminalApp {
 	}
 	
 	public void start() {
-		State[] states = makeStates();
-		List<Pair<Integer,Integer>> paths = this.getPaths();
-		
-		FiniteStateMachine fsm = new FiniteStateMachine(states, paths);
+		FiniteStateMachine fsm = new FiniteStateMachine(makeStates(), getPaths());
 		
 		ResourceBundle rb = getI18n();
 		Scanner keyboard = new Scanner(System.in);
@@ -55,39 +54,54 @@ public class ECommerceTerminalApp {
 		System.out.println("Hello World!");
 	}
 	
+	public boolean attemptLogin(String password) {
+		return true;
+	}
+	
 	public ResourceBundle getI18n() {
 		return ResourceBundle.getBundle("MenusBundle",new Locale("en","US"));
 	}
 	
 	public State[] makeStates() {
 		return new State[] {
-				new StartState(),		//0
-				new ExitState("exit"),	//1
-				new BeginLogin(),		//2
-				new EmailLogin(),		//3
-				new LoginSuccess(),		//4
-				new LoginFailure(),		//5
-				new MenuState(),		//6
-				new BuyState()			//7
+				new EntranceState(),	//0
+				new ExitState(),		//1
+				new BeginLoginState(),	//2
+				new EmailLoginState(),	//3
+				new MenuState("Return an Item","Buy an Item", "Logout")			//4
 			};
 	}
 	
-	public List<Pair<Integer,Integer>> getPaths(){
-		List<Pair<Integer,Integer>> paths = new ArrayList<>();
-		//paths.add(new Pair<>(0,0));
-		paths.add(new Pair<>(0,1));
+	public List<List<Pair<Transition,Integer>>> getPaths(){
+		List<List<Pair<Transition,Integer>>> paths = new ArrayList<>();
+		List<Pair<Transition,Integer>> path;
+
+		//Entrance 0
+		path = new ArrayList<>();
+		path.add(new Pair<>(new OptionTransition("exit"),1));
+		path.add(new Pair<>(new OptionTransition("login"),2));
+		paths.add(path);
 		
-		paths.add(new Pair<>(0,2));
-		paths.add(new Pair<>(2,3));
-		paths.add(new Pair<>(3,4));
-		paths.add(new Pair<>(3,5));
+		//Exit 1
+		path = new ArrayList<>();
+		paths.add(path);
 		
-		paths.add(new Pair<>(4,6));
-		paths.add(new Pair<>(5,0));
+		//BeginLogin 2
+		path = new ArrayList<>();
+		path.add(new Pair<>(new AnyTransition(), 3));
+		paths.add(path);
 		
-		paths.add(new Pair<>(6,7));
-		//paths.add(new Pair<>());
-				
+		//EmailLogin 3
+		path = new ArrayList<>();
+		path.add(new Pair<>(new PasswordTransition(), 4));
+		paths.add(path);
+		
+		//MenuLogin 4
+		path = new ArrayList<>();
+		path.add(new Pair<>(new OptionTransition("logout"),0));
+		paths.add(path);
+		
+		
 		return paths;
 	}
 	

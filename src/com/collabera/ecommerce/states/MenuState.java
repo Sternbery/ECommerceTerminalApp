@@ -1,32 +1,24 @@
 package com.collabera.ecommerce.states;
 
-import com.collabera.ecommerce.ECommerceTerminalApp;
+import java.util.Arrays;
+
 import com.collabera.fsm.State;
 
-public class MenuState implements State{
+public class MenuState implements State {
 
-	@Override
-	public boolean check(String input) {
-		return "".equals(input) || "return".equals(input);
+	String options;
+	
+	public MenuState(String... myoptions) {
+		this.options =Arrays.stream(myoptions).reduce("", (acc,next)->acc+next+"\n");
 	}
-
+	
 	@Override
 	public void act(String input) {
-		ECommerceTerminalApp.getSingleton().loggedin=true;
 	}
 
 	@Override
 	public String getOutput() {
-		return 	"logged in as "+ECommerceTerminalApp.getSingleton().username+"\n"+
-				"+=====================================+\n"+
-				"{rb.buy_item}  |\n"+
-				"{rb.replace_item}  |\n"+
-				"{rb.logout}  |\n"+
-				"+====================================+";
+		return options;
 	}
 
-	@Override
-	public boolean isDefault() {
-		return true;
-	}
 }
