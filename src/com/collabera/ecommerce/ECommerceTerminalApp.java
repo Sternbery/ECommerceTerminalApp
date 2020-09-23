@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
+import com.collabera.ecommerce.dao.UserDao;
 import com.collabera.ecommerce.states.*;
 import com.collabera.ecommerce.transitions.*;
 import com.collabera.fsm.FiniteStateMachine;
@@ -18,7 +19,6 @@ public class ECommerceTerminalApp {
 	
 	private static ECommerceTerminalApp singleton;
 	public String username;
-	public boolean loggedin = false;
 	
 	public static ECommerceTerminalApp getSingleton() {
 		if(singleton==null)
@@ -55,7 +55,7 @@ public class ECommerceTerminalApp {
 	}
 	
 	public boolean attemptLogin(String password) {
-		return true;
+		return UserDao.GetUser(this.username, password).isPresent();
 	}
 	
 	public ResourceBundle getI18n() {
@@ -68,7 +68,16 @@ public class ECommerceTerminalApp {
 				new ExitState(),		//1
 				new BeginLoginState(),	//2
 				new EmailLoginState(),	//3
-				new MenuState("Return an Item","Buy an Item", "Logout")			//4
+				new MenuState(			//4
+					"REPLACE an Item",
+					"BUY an Item", 
+					"LOGOUT"),
+				new MenuState(			//5 BuyState
+					"List <index> <length>",
+					"Add <id>",
+					"checkout",
+					"RETURN to menu"),
+				new ListItemsState()	//6
 			};
 	}
 	
@@ -94,14 +103,27 @@ public class ECommerceTerminalApp {
 		//EmailLogin 3
 		path = new ArrayList<>();
 		path.add(new Pair<>(new PasswordTransition(), 4));
+		path.add(new Pair<>(new PasswordFailTransition(), 0));
 		paths.add(path);
 		
 		//MenuLogin 4
 		path = new ArrayList<>();
 		path.add(new Pair<>(new OptionTransition("logout"),0));
+		path.add(new Pair<>(new OptionTransition("buy"),5));
 		paths.add(path);
 		
+		//BuyState 5
+		path = new ArrayList<>();
+		path.add(new Pair<>(new OptionTransition("return"),4));
+		path.add(new Pair<>(new OptionTransition("list"),5));
+		path.add(new Pair<>(new ArgTransition("list","\\d+","\\d+"),6));
+		paths.add(path);
 		
+		//ListItemsState 6
+		path = new ArrayList<>();
+		path.add(new Pair<>(new AnyTransition(),4));
+		paths.add(path);
+			
 		return paths;
 	}
 	

@@ -1,14 +1,13 @@
 package com.collabera.ecommerce.transitions;
 
-import java.io.PrintStream;
-
 import com.collabera.ecommerce.ECommerceTerminalApp;
 import com.collabera.fsm.Transition;
 
-public class PasswordTransition implements Transition {
+public class PasswordFailTransition extends PasswordTransition {
 
 	@Override
 	public boolean checkAccepts(String input) {
-		return ECommerceTerminalApp.getSingleton().attemptLogin(input);
+		return !super.checkAccepts(input);
 	}
+
 }
