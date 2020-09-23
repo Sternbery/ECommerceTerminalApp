@@ -1,9 +1,7 @@
 package com.collabera.fsm;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.collabera.tools.Pair;
 
@@ -24,6 +22,19 @@ public class FiniteStateMachine{
 		this.currentState = 0;
 		this.states = myStates;
 		this.paths = myPaths;
+		
+		IntStream
+			.range(0,this.states.length)
+			.anyMatch(i->paths
+				.parallelStream()
+				.filter(p->p.getT1().intValue()==i)
+				.filter(p->states[p.getT2()].isDefault())
+				.count() > 1
+			);
+	}
+	
+	public int getStateIndex() {
+		return currentState;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -52,8 +63,7 @@ public class FiniteStateMachine{
 			return MatchResult.NONE;
 		}
 		else if(endpoints.size()==1) {
-			
-			return MatchResult.ONE;
+			return changeState(endpoints.get(0).getT2(),input);
 		}
 		else{
 			
@@ -62,10 +72,10 @@ public class FiniteStateMachine{
 				if(this.handle_ambiguous_input == RETRY)
 					return MatchResult.MANY;
 				if(this.handle_ambiguous_input == TAKE_FIRST || this.handle_ambiguous_input == TAKE_FIRST_DEFAULT)
-					return this.chageState(endpoints.get(0).getT2(), input);
+					return this.changeState(endpoints.get(0).getT2(), input);
 			}
 			else if(nodefs.size() == 1) {
-				return this.chageState(nodefs.get(0).getT2(), input);
+				return this.changeState(nodefs.get(0).getT2(), input);
 			}
 			else {
 				
@@ -77,7 +87,7 @@ public class FiniteStateMachine{
 
 	}
 	
-	private MatchResult chageState(Integer index, String input) {
+	private MatchResult changeState(Integer index, String input) {
 		currentState = index;
 		getState().act(input);
 		return MatchResult.ONE;

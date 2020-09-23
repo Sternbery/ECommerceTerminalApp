@@ -26,8 +26,8 @@ public class ExitState implements State{
 	}
 
 	@Override
-	public String[] getOutput() {
-		return new String[] {"exit_state"};
+	public String getOutput() {
+		return "{rb.exit_state}";
 	}
 
 }
