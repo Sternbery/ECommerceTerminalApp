@@ -21,6 +21,7 @@ public class ECommerceTerminalApp {
 	
 	private static ECommerceTerminalApp singleton;
 	public String username;
+	public String passwordHash;
 	public User user;
 	
 	public static ECommerceTerminalApp getSingleton() {
@@ -93,8 +94,16 @@ public class ECommerceTerminalApp {
 				new ListItemsState(),	//6
 				new AddItemState(),		//7
 				new CheckoutState(),	//8
-				new ListInvoicesState()//9
-				
+				new ListInvoicesState(),//9
+				new BeginRegState(),	//10
+				new SimpleMessageState( //11
+					"Sorry that email is already in use."),
+				new SimpleMessageState( //11
+					"Sorry, that email is invalid. Please try again."),
+				new RegEmailSuccState(),//13
+				new RegPassState(),		//14
+				new RegRePass(),		//15
+				new RegPassFailState()	//16
 			};
 	}
 	
@@ -106,6 +115,7 @@ public class ECommerceTerminalApp {
 		path = new ArrayList<>();
 		path.add(new Pair<>(new OptionTransition("exit"),1));
 		path.add(new Pair<>(new OptionTransition("login"),2));
+		path.add(new Pair<>(new OptionTransition("register"),10));
 		paths.add(path);
 		
 		//Exit 1
@@ -157,7 +167,48 @@ public class ECommerceTerminalApp {
 		path = new ArrayList<>();
 		path.add(new Pair<>(new AnyTransition(),4));
 		paths.add(path);
+		
+		//BeginRegState 10 
+		path = new ArrayList<>();
+		final String ig = "cancel";
+		path.add(new Pair<>(new OptionTransition(ig),0));
+		path.add(new Pair<>(RegisterTransitions.getCheckEmailInUseTransition(ig),11));
+		path.add(new Pair<>(RegisterTransitions.getCheckEmailInvalidTransition(ig),12));
+		path.add(new Pair<>(RegisterTransitions.getEmailGoodTransition(ig),13));
+		paths.add(path);
+		
+		//RegEmailInUseState 11
+		path = new ArrayList<>();
+		path.add(new Pair<>(new AnyTransition(),10));
+		paths.add(path);
+		
+		//RegEmailBadState 12
+		path = new ArrayList<>();
+		path.add(new Pair<>(new AnyTransition(),10));
+		paths.add(path);
+		
+		//RegEmailSuccState 13
+		path = new ArrayList<>();
+		path.add(new Pair<>(new OptionTransition(ig),0));
+		path.add(new Pair<>(new NotOptionTransition(ig),14));
+		paths.add(path);
+		
+		//RegPassState 14
+		path = new ArrayList<>();
+		path.add(new Pair<>(RegisterTransitions.getReEnterPasswordTransition() ,15));
+		path.add(new Pair<>(RegisterTransitions.getReEnterPasswordailTransition() ,16));
+		paths.add(path);
+		
+		//RegRePassState 15
+		path = new ArrayList<>();
+		path.add(new Pair<>(new AnyTransition(),0));
+		paths.add(path);
 				
+		//RegPassFailState 16
+		path = new ArrayList<>();
+		path.add(new Pair<>(new AnyTransition(),14));
+		paths.add(path);
+		
 		return paths;
 	}
 	

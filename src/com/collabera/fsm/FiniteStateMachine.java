@@ -56,6 +56,8 @@ public class FiniteStateMachine{
 			return MatchResult.NONE;
 		if(found.size() == 1)
 			return this.changeState(found.get(0).getT2(), input);
+		
+		found.forEach(System.out::println);
 		return MatchResult.MANY;
 	}
 	

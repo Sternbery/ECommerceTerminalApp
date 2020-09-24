@@ -5,6 +5,10 @@ public class User {
 	public String email;
 	public String passwordHash;
 	
+	public User(String email, String passwordHash) {
+		this.email = email;
+		this.passwordHash = passwordHash;
+	}
 	public User(int id, String email, String passwordHash) {
 		this.id = id;
 		this.email = email;
