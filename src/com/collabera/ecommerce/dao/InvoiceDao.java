@@ -30,6 +30,8 @@ public class InvoiceDao {
 				newInvo.date_created = new Date(new java.util.Date().getTime());
 				newInvo.finished = false;
 				newInvo.date_finished = newInvo.date_created;
+				newInvo.refunded = false;
+				
 				table.add(newInvo);
 				return newInvo;
 			});
@@ -43,6 +45,7 @@ public class InvoiceDao {
 				i.date_created = invo.date_created;
 				i.finished = invo.finished;
 				i.date_finished = invo.date_finished;
+				i.refunded = invo.refunded;
 				return true;
 			})
 			.orElse(false);
@@ -52,5 +55,14 @@ public class InvoiceDao {
 				.filter(i->i.user_id==u.id)
 				.collect(Collectors.toList());
 				
+	}
+	public static Optional<Invoice> retrieve(int id){
+		return table.parallelStream().filter(i->i.id==id).findAny();
+	}
+	public static Optional<Invoice> retrieve(int id, User u){
+		return table.parallelStream()
+				.filter(i->i.id==id)
+				.filter(i->i.user_id==u.id)
+				.findAny();
 	}
 }

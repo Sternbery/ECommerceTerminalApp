@@ -82,7 +82,7 @@ public class ECommerceTerminalApp {
 				new BeginLoginState(),	//2
 				new EmailLoginState(),	//3
 				new MenuState(			//4
-					"REPLACE an Item",
+					"REFUND <id> an invoice",
 					"BUY an Item", 
 					"LIST <index> <length> your invoices",
 					"LOGOUT"),
@@ -102,8 +102,11 @@ public class ECommerceTerminalApp {
 					"Sorry, that email is invalid. Please try again."),
 				new RegEmailSuccState(),//13
 				new RegPassState(),		//14
-				new RegRePass(),		//15
-				new RegPassFailState()	//16
+				new RegRePassState(),	//15
+				new RegPassFailState(),	//16
+				new SimpleMessageState(	//17
+					"Invoice has been refunded"	
+					)
 			};
 	}
 	
@@ -135,6 +138,7 @@ public class ECommerceTerminalApp {
 		
 		//MenuLogin 4
 		path = new ArrayList<>();
+		path.add(new Pair<>(new ArgTransition("refund","\\d+"),17));
 		path.add(new Pair<>(new OptionTransition("logout"),0));
 		path.add(new Pair<>(new OptionTransition("buy"),5));
 		path.add(new Pair<>(new ArgTransition("list","\\d+","\\d+"),9));
@@ -207,6 +211,11 @@ public class ECommerceTerminalApp {
 		//RegPassFailState 16
 		path = new ArrayList<>();
 		path.add(new Pair<>(new AnyTransition(),14));
+		paths.add(path);
+		
+		//RegPassFailState 16
+		path = new ArrayList<>();
+		path.add(new Pair<>(new AnyTransition(),4));
 		paths.add(path);
 		
 		return paths;

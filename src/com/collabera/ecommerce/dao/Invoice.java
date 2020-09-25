@@ -8,6 +8,8 @@ public class Invoice {
 	public Date date_created;
 	public boolean finished;
 	public Date date_finished;
+	public boolean refunded;
+	
 	@Override
 	public String toString() {
 		return "Invoice [id=" + id + ", user_id=" + user_id + ", date_created=" + date_created + ", finished="

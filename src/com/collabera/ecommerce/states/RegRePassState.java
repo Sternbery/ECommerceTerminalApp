@@ -5,7 +5,7 @@ import com.collabera.ecommerce.dao.User;
 import com.collabera.ecommerce.dao.UserDao;
 import com.collabera.fsm.State;
 
-public class RegRePass implements State {
+public class RegRePassState implements State {
 
 	@Override
 	public void act(String input) {
