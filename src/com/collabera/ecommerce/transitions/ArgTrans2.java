@@ -81,7 +81,15 @@ public class ArgTrans2 implements Transition {
 	
 	@Override
 	public boolean checkAccepts(String input) {
-		return false;
+		String[] tokens = input.split(" ");
+		int j=0;
+		for(int i=0;i<size; i++) {
+			int q = patterns[i].check(j, tokens);
+			j+=q;
+			if(j>=tokens.length) //ran out of tokens before patterns
+				return false;
+		}
+		return true;
 	}
 
 }
