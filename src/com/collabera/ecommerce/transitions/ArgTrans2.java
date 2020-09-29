@@ -22,10 +22,15 @@ public class ArgTrans2 implements Transition {
 	}
 	class OneOrMoreArg extends Arg{
 		Arg arg;
-		OneOrMoreArg(Arg arg){
+		OneOrMoreArg(PatternArg arg){
 			this.arg = arg;
 		}
 		int check(int pos, String[] tokens) {
+			int i = 0;
+			while(arg.check(pos+i, tokens)!=-1) {
+				i++;
+			}
+			if(i==0) return -1;
 			return 1;
 		}
 	}
