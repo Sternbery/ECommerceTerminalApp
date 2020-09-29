@@ -48,8 +48,35 @@ public class ArgTrans2 implements Transition {
 		}
 	}
 	
+	int size=0;
+	Arg[] patterns;
 	public ArgTrans2(String... args) {
-		
+		patterns = new Arg[args.length];
+		for(int i=0; i<args.length; i++) {
+			if(args[i].equals("*")) {
+				try {
+					patterns[size-1]=new ZeroOrMoreArg((PatternArg)patterns[size-1]);
+				}catch(ClassCastException e) {
+					throw new IllegalArgumentException(e);
+				}catch(NullPointerException e) {
+					throw new IllegalArgumentException(e);
+				}
+				continue;
+			}
+			else if(args[i].equals("+")) {
+				try {
+					patterns[size-1]=new OneOrMoreArg((PatternArg)patterns[size-1]);
+				}catch(ClassCastException e) {
+					throw new IllegalArgumentException(e);
+				}catch(NullPointerException e) {
+					throw new IllegalArgumentException(e);
+				}
+				continue;
+			}
+			
+			patterns[size]=new PatternArg(args[size]);
+			size++;
+		}
 	}
 	
 	@Override
