@@ -31,7 +31,20 @@ public class ArgTrans2 implements Transition {
 				i++;
 			}
 			if(i==0) return -1;
-			return 1;
+			return i;
+		}
+	}
+	class ZeroOrMoreArg extends Arg{
+		Arg arg;
+		ZeroOrMoreArg(PatternArg arg){
+			this.arg = arg;
+		}
+		int check(int pos, String[] tokens) {
+			int i = 0;
+			while(arg.check(pos+i, tokens)!=-1) {
+				i++;
+			}
+			return i;
 		}
 	}
 	
